@@ -1,0 +1,1 @@
+// voir plus de details concernant le fetch , et voir les promesses 
