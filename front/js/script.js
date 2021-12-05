@@ -1,5 +1,4 @@
-
- // déclarer l'url et l'API
+// déclarer l'url et l'API
  const urlApi = "http://localhost:3000/api/products";
 
 loadData();
@@ -40,5 +39,4 @@ function displayProducts(listProducts){
 
     // mettre le resultat dans le composant html concerné
     document.getElementById("items").innerHTML=html;
-            
 }
