@@ -1,10 +1,22 @@
-//récupération de la chaîne de requête dans l'url 
+//Récupération de la chaîne de requête dans l'url 
 const queryString_url_id = window.location.search;
 
-//extraction de l'id
+//Extraction de l'id
 const url_Search_Params = new URLSearchParams(queryString_url_id);
 const product_id = url_Search_Params.get("id");
 
+// déclaration de la class produit selectionné
+class selectProduct  {
+    title;
+    image;
+    altImage;
+    prix;
+    description;
+    couleur;
+    quantite;
+}
+
+//Contenu de l'API
 API_id()
 function API_id () {
 fetch(`http://localhost:3000/api/products/${product_id}`)
@@ -13,102 +25,132 @@ fetch(`http://localhost:3000/api/products/${product_id}`)
     return res.json();
 })
 .then( product =>{
-    //afficher les produits récuperés
+    //afficher le produit récuperé
     console.log(product);
     contentProduct(product);
 }
 )
 .catch(erreur => {
-    console.log(erreur); alert("Une erreur")
+    console.log(erreur); alert("Une erreur est survenue")
 });
 }
 
-//afficher le produit récupéré
+//Afficher les détails du produit
 function contentProduct (product) {
-    
+    let produit = new selectProduct();
     document.querySelector(".item__img").innerHTML= `<img src="${product.imageUrl}" alt="${product.altTxt}">`;
     document.getElementById('title').textContent = `${product.name}` ;
     document.getElementById("price").textContent = `${product.price} `;
     document.getElementById("description").textContent = `${product.description} `;
 
+    produit.title= `${product.name}`;
+    produit.image=`${product.imageUrl}`;
+    produit.altImage= `${product.altTxt}`;
+    produit.description= `${product.description} `;
+    produit.prix= `${product.price} `;
+    
+    
     product.colors.forEach(element => {
     
     let color =  document.createElement('option');
     color.value=element; 
     color.text = element;
     document.getElementById('colors').append(color);
-});
-}
+    });
 
-//Ajout dans le panier: localstorage
-// Fonction de controle de quantité : la quantité doit être entre 1 et 100
-/*
-//gestion du panier 
-function saveBasket(basket){
-    localStorage.setItem("basket",JSON.stringify(basket));
-}
-
-//ajout produit au panier
-function getBasket(){
-    let basket = localStorage.getItem(basket);
-    if(basket == null){
-        return [];
-    }else {
-        return JSON.parse(basket);
+    document.getElementById('colors').addEventListener('change', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        let valid = controlerColor(this.value);
+        if(valid) produit.couleur=this.value;
     }
-}
+    );
 
-//fonction d'ajout au panier
-function addBasket(products){
-    let basket = getBasket();
-    //gestion quantité
-    let foundProduct = basket.find(p => p.id == products.id);
-    if(foundProduct != undefined){
-        foundProduct.quantity++;
-    }else{
-        product.quantity = 1;
-        basket.push(products);
+    document.getElementById('quantity').addEventListener('change', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+       let valid = controlerQuantity(this.value);
+       if(valid) produit.quantite=this.value;
     }
-    saveBasket(basket);
+    );
+
+    //Sélection du bouton Ajouter au panier 
+    //écouter le bouton et envoyer le panier
+    document.getElementById("addToCart").addEventListener('click', function (event) {
+    event.stopPropagation();
+     event.preventDefault();
+
+     let validQuantity= controlerQuantity(document.getElementById('quantity').value);
+    let validColor=controlerColor(document.getElementById('colors').value);
+     
+    if(validQuantity && validColor){
+        AjouterAuPanier(produit);
+     }
+     else{
+         alert("Veuillez choisir une couleur et une quantité valide!");
+     }
+    });
+
 }
 
-//retirer un produit du panier 
-function removeFromBasket(products){
-    let basket = getBasket();
-    basket = basket.filter(p => p.id != products.id);
-    saveBasket(basket);
-}
-
-function changeQuantity(products,quantity){
-    let basket = getBasket();
-    basket = basket.filter(p => p.id != products.id);
-    if(foundProduct != undefined){
-        foundProduct.quantity += quantity;
-        if (foundProduct.quantity <=0){
-            removeFromBasket(foundProduct);
-        }else{
-           saveBasket(basket); 
-        }
-    }  
-}
-
-//gestion quantité totale
-function getNumberProduct(){
-    let basket = getBasket();
-    let number = 0;
-    for(let product of basket){
-        number += products.quantity;
+function controlerColor(color){
+    
+    let isValid= true;
+    if(color=="") {
+        isValid=false;
+        alert("Veuillez choisir une couleur !");
     }
-    return number;
+    return isValid;
+}
+function controlerQuantity(qte){
+    let quantity = parseInt(qte);
+    let isValid= true;
+    if(quantity < 1 || quantity > 100) {
+        isValid=false;
+        alert("Veuillez choisir une quantité entre 1 et 100 !");
+    }
+    return isValid;
 }
 
-//gestion prix total
-function getTotalPrice(){
-    let basket = getBasket();
-    let total = 0;
-    for(let product of basket){
-        total += products.price;
-    }
-    return number;
+function AjouterAuPanier(produitChoisi){
+ console.log(produitChoisi);
+
+ // preparer un objet produit pour le localstorage 
+ // si c'est vide : creer un tableau vide
+ // puis inserer l'element
+
+ // si il y a un element : convertir le localstorage en tableau 
+ // puis ajouter l'element 
+ // et tu mettre à jour le localstorage 
 }
-*/
+//Stockage LocalStorage
+//Déclaration de la variable dans laquelle on met les key et value dans le localStorage
+// let produitEnregistreLocalStorage = JSON.parse(localStorage.getItem("product"));
+// let produitEnregistre = localStorage.setItem("product", JSON.stringify(produitEnregistreLocalStorage));
+// let product = ['product_id'];
+
+//Fonction fenêtre confirmation du panier
+// const popupConfirmation = () => {
+//     if(window.confirm(`Consultez le panier OK ou revenir à la sélection ANNULER`)){
+//         window.location.href = "cart.html";
+//     }else{
+//         window.location.href = "";
+//     }
+// }
+
+    //Fonction ajouter un produit sélectionné dans le localstorage
+//     const ajoutProduit = () => {
+//         produitEnregistreLocalStorage.push(produitEnregistre);
+//         produitEnregistreLocalStorage();
+//     }
+
+//       //panier vide
+// if(produitEnregistre == null){
+//     alert("Le panier est vide");
+//     return [];
+//    //panier remplie 
+// }else{
+//     ajoutProduit();
+//     popupConfirmation();
+// }
+// })
