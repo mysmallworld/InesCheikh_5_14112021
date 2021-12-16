@@ -93,6 +93,7 @@ function contentProduct (product) {
 
 }
 
+//Gestion de la couleur
 function controlerColor(color){
     
     let isValid= true;
@@ -102,6 +103,8 @@ function controlerColor(color){
     }
     return isValid;
 }
+
+//Gestion de la quantité
 function controlerQuantity(qte){
     let quantity = parseInt(qte);
     let isValid= true;
@@ -112,45 +115,23 @@ function controlerQuantity(qte){
     return isValid;
 }
 
+//Gestion du panier avec le localStorage
 function AjouterAuPanier(produitChoisi){
- console.log(produitChoisi);
-
- // preparer un objet produit pour le localstorage 
- // si c'est vide : creer un tableau vide
- // puis inserer l'element
-
- // si il y a un element : convertir le localstorage en tableau 
- // puis ajouter l'element 
- // et tu mettre à jour le localstorage 
+// preparer un objet produit pour le localstorage 
+let produitEnregistre = JSON.parse(localStorage.getItem("produit"));
+// si c'est vide : creer un tableau vide
+// puis inserer l'element
+if(produitEnregistre == null){
+    produitEnregistre = [];
+    produitEnregistre.push(produitChoisi);
+    localStorage.setItem("produit",JSON.stringify(produitEnregistre));
+} 
+// si il y a un element : convertir le localstorage en tableau 
+//  puis ajouter l'element 
+//  et mettre à jour le localstorage 
+else{
+    produitEnregistre = [produitEnregistre];
+    produitEnregistre.push(produitChoisi);
+    localStorage.setItem("produit",JSON.stringify(produitEnregistre));
 }
-//Stockage LocalStorage
-//Déclaration de la variable dans laquelle on met les key et value dans le localStorage
-// let produitEnregistreLocalStorage = JSON.parse(localStorage.getItem("product"));
-// let produitEnregistre = localStorage.setItem("product", JSON.stringify(produitEnregistreLocalStorage));
-// let product = ['product_id'];
-
-//Fonction fenêtre confirmation du panier
-// const popupConfirmation = () => {
-//     if(window.confirm(`Consultez le panier OK ou revenir à la sélection ANNULER`)){
-//         window.location.href = "cart.html";
-//     }else{
-//         window.location.href = "";
-//     }
-// }
-
-    //Fonction ajouter un produit sélectionné dans le localstorage
-//     const ajoutProduit = () => {
-//         produitEnregistreLocalStorage.push(produitEnregistre);
-//         produitEnregistreLocalStorage();
-//     }
-
-//       //panier vide
-// if(produitEnregistre == null){
-//     alert("Le panier est vide");
-//     return [];
-//    //panier remplie 
-// }else{
-//     ajoutProduit();
-//     popupConfirmation();
-// }
-// })
+}
