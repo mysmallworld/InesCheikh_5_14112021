@@ -43,11 +43,12 @@ function contentProduct (product) {
     document.getElementById("price").textContent = `${product.price} `;
     document.getElementById("description").textContent = `${product.description} `;
 
+    produit.id=`${product_id}`;
     produit.title= `${product.name}`;
     produit.image=`${product.imageUrl}`;
     produit.altImage= `${product.altTxt}`;
-    produit.description= `${product.description} `;
-    produit.prix= `${product.price} `;
+    produit.description= `${product.description}`;
+    produit.prix= parseFloat(`${product.price}`);
     
     
     product.colors.forEach(element => {
@@ -70,7 +71,7 @@ function contentProduct (product) {
         event.stopPropagation();
         event.preventDefault();
        let valid = controlerQuantity(this.value);
-       if(valid) produit.quantite=this.value;
+       if(valid) produit.quantite=parseInt(this.value);
     }
     );
 
@@ -90,7 +91,6 @@ function contentProduct (product) {
          alert("Veuillez choisir une couleur et une quantité valide!");
      }
     });
-
 }
 
 //Gestion de la couleur
@@ -117,21 +117,28 @@ function controlerQuantity(qte){
 
 //Gestion du panier avec le localStorage
 function AjouterAuPanier(produitChoisi){
-// preparer un objet produit pour le localstorage 
-let produitEnregistre = JSON.parse(localStorage.getItem("produit"));
-// si c'est vide : creer un tableau vide
-// puis inserer l'element
-if(produitEnregistre == null){
-    produitEnregistre = [];
+// Préparation d'un objet produit pour le localStorage 
+let produitEnregistre = getLocalStorage();
+let exist=false;
+let updatelocal=false;
+produitEnregistre.forEach(element => {
+    if(element.id==produitChoisi.id && element.couleur==produitChoisi.couleur )
+    {
+        exist=true;
+        let valid = controlerQuantity(element.quantite+produitChoisi.quantite);
+        if(valid)
+       { element.quantite+=produitChoisi.quantite;
+        updatelocal=true;
+       }
+        
+    }
+});
+
+    if(!exist){
     produitEnregistre.push(produitChoisi);
-    localStorage.setItem("produit",JSON.stringify(produitEnregistre));
-} 
-// si il y a un element : convertir le localstorage en tableau 
-//  puis ajouter l'element 
-//  et mettre à jour le localstorage 
-else{
-    produitEnregistre = [produitEnregistre];
-    produitEnregistre.push(produitChoisi);
-    localStorage.setItem("produit",JSON.stringify(produitEnregistre));
-}
+    updatelocal=true;
+    }
+  if((updatelocal))
+    savelocalStorage(produitEnregistre);
+
 }
