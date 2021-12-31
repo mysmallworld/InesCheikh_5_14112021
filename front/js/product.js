@@ -93,27 +93,7 @@ function contentProduct (product) {
     });
 }
 
-//Gestion de la couleur
-function controlerColor(color){
-    
-    let isValid= true;
-    if(color=="") {
-        isValid=false;
-        alert("Veuillez choisir une couleur !");
-    }
-    return isValid;
-}
 
-//Gestion de la quantité
-function controlerQuantity(qte){
-    let quantity = parseInt(qte);
-    let isValid= true;
-    if(quantity < 1 || quantity > 100) {
-        isValid=false;
-        alert("Veuillez choisir une quantité entre 1 et 100 !");
-    }
-    return isValid;
-}
 
 //Gestion du panier avec le localStorage
 function AjouterAuPanier(produitChoisi){
@@ -133,12 +113,10 @@ produitEnregistre.forEach(element => {
         
     }
 });
-
     if(!exist){
     produitEnregistre.push(produitChoisi);
     updatelocal=true;
     }
   if((updatelocal))
-    savelocalStorage(produitEnregistre);
-
+    savelocalStorage(produitEnregistre , "Ajout");
 }
