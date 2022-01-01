@@ -158,7 +158,7 @@ document.getElementById('totalPrice').textContent=totalPrice;
 
     //fonction de validation de l'email
     function validateEmail(email){
-      let emailRegExp = new RegExp("\b[\w.%+-]+@[a-zA-Z\d.-]+\.[A-Za-z]{2,4}\b");
+      let emailRegExp = new RegExp("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\w+)*(\\.\\w{2,3})+$");
       let emailTest = emailRegExp.test(email.value);
       if(emailTest) {
         return true;
@@ -236,14 +236,14 @@ fetch("http://localhost:3000/api/products/order", {
     'Content-Type': 'application/json'
   },
   })
-.then((res) => {
-  if(res.ok) console.log(res);
-  return res.json();
-  })
-.then((data) => {
-  console.log(data);
-  alert("Formulaire rempli avec succès");
-  document.location.href=`confirmation.html?orderId=${data.orderId}`;     
+  .then((res) => {
+    if(res.ok) console.log(res);
+    return res.json();
+    })
+  .then((data)=> {
+    console.log(data);
+    alert("Formulaire rempli avec succès !");
+    document.location.href=`confirmation.html?orderId=${data.orderId}`;
   })
 .catch((error) => {
   console.log(error);
