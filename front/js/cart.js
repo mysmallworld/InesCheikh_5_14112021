@@ -29,11 +29,10 @@ function displayProduits (produitEnregistres) {
         </div>
       </article> `;
     });
-
-    updateTotal(produitEnregistre);
-
+    
     document.getElementById('cart__items').innerHTML=html;
 
+    //
     document.querySelectorAll('.itemQuantity').forEach(element => {
       element.addEventListener( 'change', function (event){
         event.stopPropagation();
@@ -42,20 +41,24 @@ function displayProduits (produitEnregistres) {
         let valid = controlerQuantity(this.value);
         if (valid ) {
           updateproductInTable(produitEnregistres, this.closest(".cart__item").dataset.id , this.closest(".cart__item").dataset.color , this.value);
-          //Mettre à jour tableau localstorage
+          //Mise à jour tableau localstorage
           produitEnregistres = getLocalStorage();
           // update calcul total
           updateTotal(produitEnregistres);
         }
       });
   });
- 
+  
+  //appel de la fonction prix total des produits
+    updateTotal(produitEnregistre);
+
+    //récupération des bouttons supprimer
     document.querySelectorAll('.deleteItem').forEach(element => {
         element.addEventListener( 'click', function (event){
           event.stopPropagation();
           event.preventDefault();
 
-          deleteproductFromTable(produitEnregistres, this.closest(".cart__item").dataset.id , this.closest(".cart__item").dataset.color );
+          deleteProductFromTable(produitEnregistres, this.closest(".cart__item").dataset.id , this.closest(".cart__item").dataset.color );
           //supprimer l'element du html panier
           element.closest(".cart__item").remove();
           produitEnregistres = getLocalStorage();
@@ -65,7 +68,7 @@ function displayProduits (produitEnregistres) {
     });
 
 //Gestion du boutton supprimer les produits enregistrés 
-function deleteproductFromTable(tableau, id , couleur ){
+function deleteProductFromTable(tableau, id , couleur ){
           
   let index =-1;
   tableau.forEach(element => {
@@ -76,10 +79,10 @@ function deleteproductFromTable(tableau, id , couleur ){
 if(index != -1)
   tableau.splice(index , 1);
    
-savelocalStorage(tableau , "Suppression" );
-  
+savelocalStorage(tableau , "Suppression");
 }
 
+//gestion de la couleur et de la quantité
 function updateproductInTable(tableau, id , color , qte){
 
   tableau.forEach(element => {
@@ -103,116 +106,153 @@ let totalPrice = 0.0;
   totalQte += tableau[k].quantite ;
  }
 
-// mise à jour du html
+// mise à jour du html quantité et prix
 document.getElementById("totalQuantity").textContent=totalQte;
 document.getElementById('totalPrice').textContent=totalPrice;
-}
+}}
    
-// gerer la validation du formulaire 
-    let form = document.querySelector('.cart__order__form');
-    // validation champ name
-    form.firstName.addEventListener('change', function (event) {
-      event.stopPropagation();
-      event.preventDefault();
-      validateName(this);
-    });
-    form.lastName.addEventListener('change', function (event) {
-      event.stopPropagation();
-      event.preventDefault();
-      validateName(this);
-    });
-    //validation champ adresse
-    form.address.addEventListener('change', function (event) {
-      event.stopPropagation();
-      event.preventDefault();
-      validateAddress(this);
-    });
-    //validation champ ville
-    form.city.addEventListener('change', function (event) {
-      event.stopPropagation();
-      event.preventDefault();
-      validateCity(this);
-    });
-    // validation champ email
-    form.email.addEventListener('change', function (event) {
-    event.stopPropagation();
-    event.preventDefault();
-    validateEmail(this);
-    });
+// gestion de la validation du formulaire 
+    //récupération des cases à remplir
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const address = document.getElementById('address');
+    const city = document.getElementById('city');
+    const email = document.getElementById('email');
 
-    const createContact = {
-      firstName : "",
-      lastName : "" ,
-      address : "",
-      city : "",
-      email : ""
-    };
-
-    const createProductID = [];
-
-    let validForm = false;
-
-    function validateName(name){
-      if(name.length == 0){
-        name.setCustomValidity("Veuillez renseigner ce champ !");
-        validForm = false;
-      }else if (!/[0-9]/.test(name)){
-        validForm = true;
+    //fonction de validation du prénom
+    function validateName(name, sens){
+      let nameRegExp = new RegExp("^[À-ÿA-z]+$|^[À-ÿA-z]+-[À-ÿA-z]+$");
+      let nameTest = nameRegExp.test(name.value);
+      if(nameTest) {
+        return true;
       }else {
-        name.setCustomValidity("ce champ ne peut pas contenir de chiffre !");
+        if(sens == "prenom") alert("Votre Prénom n'est pas valide!");
+        if(sens == "nom") alert("Votre Nom n'est pas valide !");
         return false;
       }
     }
+
+    //fonction de validation de l'addresse
     function validateAddress(address){
-      if (address.length == 0){
-        address.setCustomValidity("Veuillez renseigner votre adresse !");
-        valideForm =false;
-      }else{
-        validForm = true;
-      }
-    }
-    function validateCity(city){
-      if (city.length == 0){
-        city.setCustomValidity("Veuillez renseigner votre ville !");
-        validForm = false;
+      let addressRegExp = new RegExp("^[0-9]{1,4} [^- ][a-zA-Z '-àâäéèêëïîôöùûü]*[^- ]$");
+      let addressTest = addressRegExp.test(address.value);
+      if(addressTest) {
+        return true;
       }else {
-        validForm = true;
+        alert("Veuillez saisir une adresse valide !");
+        return false;
       }
     }
-    function validateEmail(email){
-      let emailRegExp = new RegExp(/^[\\w\\-]+(\\.[\\w\\-]+)*@([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4}$/);
-      if (email.length == 0) {
-        email.setCustomValidity("Veuillez renseigner votre email !");
-        validForm = false;
-      }else if (emailRegExp.test(email)){
-        validForm = true;
-      } else {
-        email.setCustomValidity("Veuillez renseigner email valide !")
-        validForm = false;
+
+    //fonction de validation de la ville
+    function validateCity(city){
+      let cityRegExp = new RegExp("^[a-zA-Z',.\s-]{1,25}$");
+      let cityTest = cityRegExp.test(city.value);
+      if(cityTest) {
+        return true;
+      }else {
+        alert("Veuillez saisir une ville valide !");
+        return false;
       }
-    }}
+    }
 
+    //fonction de validation de l'email
+    function validateEmail(email){
+      let emailRegExp = new RegExp("\b[\w.%+-]+@[a-zA-Z\d.-]+\.[A-Za-z]{2,4}\b");
+      let emailTest = emailRegExp.test(email.value);
+      if(emailTest) {
+        return true;
+      }else {
+        alert("Veuillez saisir une adresse mail valide !");
+        return false;
+      }
+    }
 
-//fin formulaire
-document.getElementById('order').addEventListener( 'click', function (event){
-  event.stopPropagation();
-  event.preventDefault();
+    // validation champ name
+    firstName.addEventListener('change', function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      validateName(firstName, "prenom");
+    });
+    lastName.addEventListener('change', function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      validateName(lastName, "nom");
+    });
+    //validation champ adresse
+    address.addEventListener('change', function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      validateAddress(address);
+    });
+    //validation champ ville
+    city.addEventListener('change', function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      validateCity(city);
+    });
+    // validation champ email
+    email.addEventListener('change', function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    validateEmail(email);
+    });
 
-  // envoyer l'ordre à l'api /order
-  fetch("http://localhost:3000/api/products/order" , {
-    method:"POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({contact: createContact(form), products: createProductID(produitEnregistres),
-    })
-  .then(res => {
-    if(res.ok) console.log(res);
-    return res.json();
+    //fonction de validation du formulaire
+    function validForm(){
+      //récupération du boutton commander
+      document.getElementById('order').addEventListener( 'click', function (event){
+        event.stopPropagation();
+        event.preventDefault();
+
+        //réunification de toutes les fonctions de validation des champs
+        let validateForm = validateName(firstName) && validateName(lastName) && 
+        validateAddress(address) && validateCity(city) && validateEmail(email);
+
+        if(validateForm){
+          let listProductID = [];
+      for (let i = 0; i < produitEnregistre; i = i + 1) {
+      listProductID.push(produitEnregistre[i].id);  
+    }
+
+    const form = {
+      contact : {
+        firstName : firstName.value,
+        lastName : lastName.value ,
+        address : address.value,
+        city : city.value,
+        email : email.value,
+      },
+    products : 
+        listProductID,
+      }
+      
+// envoyer l'ordre à l'api /order
+fetch("http://localhost:3000/api/products/order", {
+  method: 'POST',
+  body: JSON.stringify(form),
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
   })
-  .catch(error => {
-    console.log(error);alert("Veuillez contacter l'admninstrateur")
+.then((res) => {
+  if(res.ok) console.log(res);
+  return res.json();
   })
-})
-})
+.then((data) => {
+  console.log(data);
+  alert("Formulaire rempli avec succès");
+  document.location.href=`confirmation.html?orderId=${data.orderId}`;     
+  })
+.catch((error) => {
+  console.log(error);
+  alert("Veuillez contacter l'administrateur")
+  });
+}
+else {
+  alert("Veuillez remplir le formulaire avant de passer commande")
+}
+      });
+    }
+    validForm();

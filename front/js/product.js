@@ -85,7 +85,7 @@ function contentProduct (product) {
     let validColor=controlerColor(document.getElementById('colors').value);
      
     if(validQuantity && validColor){
-        AjouterAuPanier(produit);
+        addBasket(produit);
      }
      else{
          alert("Veuillez choisir une couleur et une quantité valide!");
@@ -93,10 +93,8 @@ function contentProduct (product) {
     });
 }
 
-
-
 //Gestion du panier avec le localStorage
-function AjouterAuPanier(produitChoisi){
+function addBasket(produitChoisi){
 // Préparation d'un objet produit pour le localStorage 
 let produitEnregistre = getLocalStorage();
 let exist=false;
