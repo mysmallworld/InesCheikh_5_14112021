@@ -1,8 +1,8 @@
-// déclarer l'url et l'API
+// Déclaration de l'url et de l'API
  const urlApi = "http://localhost:3000/api/products";
 
 loadData();
-// load contenu API 
+// Chargement du contenu de l'API
 function loadData(){
     fetch(urlApi)
     .then(res => {
@@ -10,7 +10,7 @@ function loadData(){
         return res.json();
     })
     .then( products =>{
-        //afficher les produits récuperés
+        //affiche les produits récuperés
         console.log(products);
         displayProducts(products);
     }
@@ -20,6 +20,7 @@ function loadData(){
     });
 }
 
+//Afficher les produits sur la page d'accueil
 function displayProducts(listProducts){
 
     //préparer la variable html

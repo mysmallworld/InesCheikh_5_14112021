@@ -10,5 +10,5 @@ function displayOrder(){
     //récupération de l'emplacement du numéro de commande
     document.getElementById("orderId").textContent=`${orderID}`; 
   }
-  
+  //Appel de la fonction
   displayOrder();
